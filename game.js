@@ -15,6 +15,7 @@ var paddles = []; // Paddles
 
 var number_live_balls = 0; // Number of balls currently
 var max_balls = 4; // The maximum number of balls
+var ballRadius = 9;
 
 Crafty.init(windowSize, windowSize+100); // Init the window
 Crafty.background('white'); // Sets the window background
@@ -75,17 +76,41 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         }
         this.calcPos();
     });
-
-
 }
 
 function createBall() {
     if (number_live_balls < max_balls) {
         number_live_balls++;
 
-        var ball = Crafty.e('Ball, 2D, DOM, Color');
-    }
+        var ball = Crafty.e('Ball, 2D, DOM, Color, Collision');
+        // ball.color(colours[(Math.random()*playerNum)]);
+        ball.color('black');
+        ball.attr({
+            x: center,
+            y: center,
+            h: ballRadius,
+            w: ballRadius,
+            dx: Math.random()*2,
+            dy: Math.random()*2
+        });
+        ball.bind('EnterFrame', function() {
+            this.x += this.dx;
+            this.y += this.dy;
+        });
 
+        ball.onHit('Paddle', function() {
+            console.log('Hit paddle');
+            this.x *= -1;
+            this.y *= -1;
+        });
+        ball.onHit('Wall', function() {
+            console.log('Hit wall');
+            this.destroy();
+        });
+        console.log("Ball Created");
+    } else {
+        console.log('Max balls');
+    }
 }
 
 // Server ping
@@ -93,4 +118,6 @@ function paddleMovements() {
 
 }
 
-// setInterval(createBall, 5000);
+createBall();
+setInterval(createBall, 3000);
+// setInterval(paddleMovements, 50);
