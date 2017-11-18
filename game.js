@@ -1,21 +1,35 @@
 
+// window Variables
 var windowSize = 1000; // Window Size
 var center = windowSize/2; // Window Center
 var radius = windowSize/3; // Window Radius
+
+// Paddle variables
+var paddleThickness = 10; // Paddle Thickness
+var paddleLength = 125; // Paddle Length
 var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray']; // Paddle Colours
 
-var paddleThickness = 10; // Paddle Thickness
-var paddleLength = 75; // Paddle Length
-
+// Setup variables
 var playerNum = 6; // Number of players
 var angleRad = 2*Math.PI/playerNum; // Gets the angle between players
 var angleDeg = 360/playerNum; // Gets the angle between players
 var topRadius = 2 * radius * Math.tan(angleRad/2);
 
+// Balls variables
 var number_live_balls = 0; // Number of balls currently
-var max_balls = 4; // The maximum number of balls
+var max_balls = 5; // The maximum number of balls
 var ballRadius = 10;
 var ballAcceleration = 5;
+var maxBallSpeed = 3;
+var minBallSpeed = 0.5;
+var paddleHitMultiplier = 1.5;
+var createBallInterval = 3000;
+
+// Powerup variables
+var number_live_powerup = 0;
+var maxPowerups = 3;
+var powerupRadius = 40;
+var createPowerupInterval = 3000;
 
 Crafty.init(windowSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
@@ -27,7 +41,7 @@ for(var outerPos = 0; outerPos < playerNum; outerPos++){
 	wall.attr({
 		x: center + (outerLength * Math.sin(outerPos * angleRad - (angleRad/2))),
 		y: center + (outerLength * Math.cos(outerPos * angleRad - (angleRad/2))),
-		w: outerLength,
+		w: outerLength + 4,
 		h: 5,
 		rotation: -outerPos * angleDeg
 	});
@@ -41,13 +55,14 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
 
     paddle.color(colours[paddlePos]);
     paddle.attr({
+        id: paddlePos,
         originalX: center + (topRadius * Math.sin(paddlePos * angleRad - (angleRad / 2))),
         originalY: center + (topRadius * Math.cos(paddlePos * angleRad - (angleRad / 2))),
         w: paddleLength, h: paddleThickness,
         rotation: -paddlePos * angleDeg,
         //position: [-1,1,-1,1,-1,1][paddlePos],
         position: 0,
-        movement: 0 // Clockwise 1 Anticlock -1 No thing 0
+        movement: 0.2 // Clockwise 1 Anticlock -1 No thing 0
     });
     paddle.calcPos = function() {
         this.attr({
@@ -79,19 +94,29 @@ function createBall() {
             dx: (Math.random()-0.5)*ballAcceleration,
             dy: (Math.random()-0.5)*ballAcceleration
         });
+
         ball.bind('EnterFrame', function() {
-            if (this.dx === 0 && this.dy === 0) {
-                this.dx = (Math.random()-0.5)*4;
-                this.dy = (Math.random()-0.5)*4;
+            if (this.dx < minBallSpeed && this.dy < minBallSpeed) {
+                this.dx = (Math.random()-0.5)*6;
+                this.dy = (Math.random()-0.5)*6;
             }
+            if (this.dx > maxBallSpeed) {
+                this.dx = maxBallSpeed;
+            } else if (this.dy > maxBallSpeed) {
+                this.dy = maxBallSpeed;
+            }
+
             this.x += this.dx;
             this.y += this.dy;
         });
 
         ball.onHit('Paddle', function() {
             console.log('Hit paddle');
-            this.dx *= -1;
-            this.dy *= -1;
+            this.x += -this.dx;
+            this.y += -this.dy;
+
+            this.dx = -(this.dx + (Math.random() * paddleHitMultiplier));
+            this.dy = -(this.dy + (Math.random() * paddleHitMultiplier));
         });
         ball.onHit('Wall', function() {
             console.log('Hit wall');
@@ -99,24 +124,47 @@ function createBall() {
             number_live_balls--;
             createBall();
         });
-        console.log("Ball Created");
-    } else {
-        console.log('Max balls');
     }
 }
 
 function createPowerup() {
-
+    if (number_live_powerup < maxPowerups) {
+        //var powerupPolygon = new Crafty.polygon(0,0, 0,20, 20,20, 20,0);
+        var powerup = Crafty.e("PowerUp, 2D, DOM, Color, Collision");
+        powerup.attr({
+            id: Crafty.math.randomInt(0, 4),
+            x: center+(Math.random()-0.5*200),
+            y: center+(Math.random()-0.5*200),
+            color: 'red'
+        });
+        powerup.onHit('Ball', function() {
+            console.log("Powerup Hit");
+            number_live_powerup--;
+            // TODO run powerup function
+            this.destroy();
+        });
+        number_live_powerup++;
+        console.log('Create powerup');
+    }
 }
 
-var paddleRequest = new XMLHttpRequest();
-paddleRequest.onreadystatechange = function() {
-    if (this.readyState === 4 && this.status === 200) {
-        paddles = paddleRequest.responseText;
-    }
-};
-paddleRequest.open("GET", "PaddleRequest", true);
+function paddleRequest() {
+    $.get("/paddles", function (data) {
+        if (data.status !== 200) {
+            // Well something went wrong
+        } else {
+            paddles = Crafty('Paddle');
+            for (paddlePos = 0; paddlePos < playerNum; paddlePos++) {
+                paddles[paddlePos].movment = data[paddlePos];
+            }
+        }
+    });
+}
 
-createBall();
-setInterval(createBall, 3000);
-//setInterval(paddleRequest.send(), 50);
+//createBall();
+//setInterval(createBall, createBallInterval);
+
+createPowerup();
+setInterval(createPowerup, createPowerupInterval);
+
+//setInterval(paddleRequest, 100);
