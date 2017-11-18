@@ -1,6 +1,6 @@
 
-var windowSize = 750; // Window Size
-var center = windowSize/3; // Window Center
+var windowSize = 1000; // Window Size
+var center = windowSize/2; // Window Center
 var radius = windowSize/3; // Window Radius
 var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray']; // Paddle Colours
 
@@ -19,6 +19,21 @@ var max_balls = 4; // The maximum number of balls
 Crafty.init(windowSize, windowSize+100); // Init the window
 Crafty.background('white'); // Sets the window background
 
+var outerRadius = radius + 10;
+var outerLength = outerRadius * 2 * Math.tan(angleRad/2);
+for(var outerPos = 0; outerPos < playerNum; outerPos++){
+	var wall = Crafty.e("Paddle, 2D, DOM, Color, Collision");
+	wall.attr({
+		x: center + (outerRadius * Math.sin(outerPos * angleRad)) - (outerLength/2),
+		y: center + (outerRadius * Math.cos(outerPos * angleRad)),
+		w: outerLength,
+		h: 5,
+		rotation: -outerPos * angleDeg
+	});
+	wall.origin("center");
+	wall.color("black");
+}
+
 // Creates the paddles
 for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     // Create a paddle
@@ -26,8 +41,8 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
 
     paddle.color(colours[paddlePos]);
     paddle.attr({
-        originalX: center + radius * Math.sin(paddlePos * angleRad),
-        originalY: center + radius * Math.cos(paddlePos * angleRad),
+        originalX: center + (radius * Math.sin(paddlePos * angleRad)) - paddleLength/2,
+        originalY: center + (radius * Math.cos(paddlePos * angleRad)),
         w: paddleLength, h: paddleThickness,
         rotation: -paddlePos * angleDeg,
         position: [-1,1,-1,1,-1,1][paddlePos],
