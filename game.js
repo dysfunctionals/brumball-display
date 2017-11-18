@@ -59,7 +59,7 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     paddle.calcPos();
     paddle.bind('EnterFrame', function () {
         if (this.position < 1 && this.position > -1) {
-            this.position += movement * 0.05;
+            this.position += this.movement * 0.05;
         }
         this.calcPos();
     });
@@ -121,4 +121,4 @@ paddleRequest.open("GET", "PaddleRequest", true);
 
 createBall();
 setInterval(createBall, 3000);
-setInterval(paddleRequest.send(), 50);
+//setInterval(paddleRequest.send(), 50);
