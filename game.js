@@ -2,7 +2,8 @@
 // window Variables
 var windowSize = 1000; // Window Size
 var center = windowSize/2; // Window Center
-var radius = windowSize/3; // Window Radius
+var radius = windowSize/3; // Window Radius]
+var url = "http://localhost:8080"; // Url to the server
 
 // Paddle variables
 var paddleThickness = 10; // Paddle Thickness
@@ -129,10 +130,12 @@ function createBall() {
 
 function createPowerup() {
     if (number_live_powerup < maxPowerups) {
-        //var powerupPolygon = new Crafty.polygon(0,0, 0,20, 20,20, 20,0);
+        var powerUpId = Crafty.math.randomInt(0, 4);
+        var powerUps = ["", "", "", ""];
+        Crafty.sprite("img/"+powerUps[powerUpId]);
         var powerup = Crafty.e("PowerUp, 2D, DOM, Color, Collision");
         powerup.attr({
-            id: Crafty.math.randomInt(0, 4),
+            id: powerUpId,
             x: center+(Math.random()-0.5*200),
             y: center+(Math.random()-0.5*200),
             color: 'red'
@@ -149,22 +152,22 @@ function createPowerup() {
 }
 
 function paddleRequest() {
-    $.get("/paddles", function (data) {
-        if (data.status !== 200) {
-            // Well something went wrong
+    $.get(url+"/paddles", function (data) {
+        if (data.status == "fail") {
+            console.log("Well something went wrong");
         } else {
             paddles = Crafty('Paddle');
             for (paddlePos = 0; paddlePos < playerNum; paddlePos++) {
-                paddles[paddlePos].movment = data[paddlePos];
+                paddles[paddlePos].movment = data['data'][paddlePos];
             }
         }
     });
 }
 
-//createBall();
-//setInterval(createBall, createBallInterval);
+createBall();
+setInterval(createBall, createBallInterval);
 
 createPowerup();
 setInterval(createPowerup, createPowerupInterval);
 
-//setInterval(paddleRequest, 100);
+setInterval(paddleRequest, 100);
