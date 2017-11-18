@@ -3,7 +3,7 @@ Crafty.background('white');
 
 // Paddles
 // [X, Y, Angle, Colour]
-var center = 500;
+var center = 750;
 var radius = 100;
 var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray'];
 
@@ -16,14 +16,16 @@ var number_live_balls = 0;
 var max_balls = 4;
 
 for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
-    var newThing = Crafty.e('Paddle, 2D, Color');
+    var newThing = Crafty.e('Paddle, 2D, DOM, Color');
     newThing.color(colours[paddlePos]);
+    newThing.origin("center");
     newThing.attr({
             x: center + radius*Math.sin(paddlePos*angle),
             y: center + radius*Math.cos(paddlePos*angle),
             w: paddleWidth, h: paddleLength,
-            rotate: paddlePos*angle
+            rotation: paddlePos*angle
         });
+
 
     console.log(newThing);
 }
