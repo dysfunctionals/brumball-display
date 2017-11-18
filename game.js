@@ -17,33 +17,34 @@ var number_live_balls = 0; // Number of balls currently
 var max_balls = 4; // The maximum number of balls
 var ballRadius = 9;
 
-Crafty.init(windowSize, windowSize+100); // Init the window
+Crafty.init(windowSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
 
 var outerRadius = radius + 10;
 var outerLength = outerRadius * 2 * Math.tan(angleRad/2);
 for(var outerPos = 0; outerPos < playerNum; outerPos++){
-	var wall = Crafty.e("Paddle, 2D, DOM, Color, Collision");
+	var wall = Crafty.e("Wall, 2D, DOM, Color, Collision");
 	wall.attr({
-		x: center + (outerRadius * Math.sin(outerPos * angleRad)) - (outerLength/2),
-		y: center + (outerRadius * Math.cos(outerPos * angleRad)),
+		x: center + (outerLength * Math.sin(outerPos * angleRad - (angleRad/2))),
+		y: center + (outerLength * Math.cos(outerPos * angleRad - (angleRad/2))),
 		w: outerLength,
 		h: 5,
 		rotation: -outerPos * angleDeg
 	});
-	wall.origin("center");
 	wall.color("black");
 }
 
 // Creates the paddles
 for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     // Create a paddle
-    var paddle = Crafty.e('Paddle, 2D, DOM, Color, Collision');
+    var paddle = Crafty.e('Paddle, 2D, DOM, Color, Collision, WiredHitBox');
+
+	paddle.debugStroke("green");
 
     paddle.color(colours[paddlePos]);
     paddle.attr({
-        originalX: center + (radius * Math.sin(paddlePos * angleRad)) - paddleLength/2,
-        originalY: center + (radius * Math.cos(paddlePos * angleRad)),
+        originalX: center + (topRadius * Math.sin(paddlePos * angleRad - (angleRad / 2))),
+        originalY: center + (topRadius * Math.cos(paddlePos * angleRad - (angleRad / 2))),
         w: paddleLength, h: paddleThickness,
         rotation: -paddlePos * angleDeg,
         position: [-1,1,-1,1,-1,1][paddlePos],
@@ -52,12 +53,11 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     });
     paddle.calcPos = function() {
         this.attr({
-            x: this.originalX + ((topRadius/2 - paddleLength/2) * this.position * Math.cos(this.rotation * 2*Math.PI/360)),
-            y: this.originalY + ((topRadius/2 - paddleLength/2) * this.position * Math.sin(this.rotation * 2*Math.PI/360))
+            x: this.originalX + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.cos(this.rotation * 2*Math.PI/360)),
+            y: this.originalY + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.sin(this.rotation * 2*Math.PI/360))
         });
     };
     paddle.calcPos();
-    paddle.origin("center");
     paddle.bind('EnterFrame', function () {
         if (this.movement === 1) {
             if (this.position < 1) {
@@ -100,8 +100,8 @@ function createBall() {
 
         ball.onHit('Paddle', function() {
             console.log('Hit paddle');
-            this.x *= -1;
-            this.y *= -1;
+            this.dx *= -1;
+            this.dy *= -1;
         });
         ball.onHit('Wall', function() {
             console.log('Hit wall');
