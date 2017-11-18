@@ -30,11 +30,11 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         originalY: center + radius * Math.cos(paddlePos * angleRad),
         w: paddleLength, h: paddleThickness,
         rotation: -paddlePos * angleDeg,
-        position: [-0.8,0,0,0,0,1][paddlePos],
+        position: [-1,1,-1,1,-1,1][paddlePos],
+        //position: 0,
         movement: 1 // Clockwise 1 Anticlock -1 No thing 0
     });
     paddle.calcPos = function() {
-        console.log(paddle.attr("originalX"));
         this.attr({
             x: this.originalX + ((topRadius/2 - paddleLength/2) * this.position * Math.cos(this.rotation * 2*Math.PI/360)),
             y: this.originalY + ((topRadius/2 - paddleLength/2) * this.position * Math.sin(this.rotation * 2*Math.PI/360))
@@ -43,10 +43,25 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     paddle.calcPos();
     paddle.origin("center");
     paddle.bind('EnterFrame', function () {
-
+        if (this.movement === 1) {
+            if (this.position < 1) {
+                this.position += 0.05;
+            } else {
+                this.movement = -1;
+            }
+        } else if (this.movement === -1) {
+            if (this.position > -1) {
+                this.position -= 0.05;
+            } else {
+                this.movement = 1;
+            }
+        } else {
+            // No movement
+        }
+        this.calcPos();
     });
 
-    console.log("Paddle X:" + paddle.attr("x") + " Y:" + paddle.attr("y") + " R:" + paddle.attr("rotation") + " C:" + colours[paddlePos]);
+
 }
 
 function createBall() {
