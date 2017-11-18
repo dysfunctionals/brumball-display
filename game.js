@@ -11,11 +11,10 @@ var playerNum = 6; // Number of players
 var angleRad = 2*Math.PI/playerNum; // Gets the angle between players
 var angleDeg = 360/playerNum; // Gets the angle between players
 var topRadius = 2 * radius * Math.tan(angleRad/2);
-var paddles = []; // Paddles
 
 var number_live_balls = 0; // Number of balls currently
 var max_balls = 4; // The maximum number of balls
-var ballRadius = 9;
+var ballRadius = 10;
 
 Crafty.init(windowSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
@@ -39,7 +38,7 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     // Create a paddle
     var paddle = Crafty.e('Paddle, 2D, DOM, Color, Collision, WiredHitBox');
 
-	paddle.debugStroke("green");
+	//paddle.debugStroke("green");
 
     paddle.color(colours[paddlePos]);
     paddle.attr({
@@ -47,9 +46,9 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         originalY: center + (topRadius * Math.cos(paddlePos * angleRad - (angleRad / 2))),
         w: paddleLength, h: paddleThickness,
         rotation: -paddlePos * angleDeg,
-        position: [-1,1,-1,1,-1,1][paddlePos],
-        //position: 0,
-        movement: 1 // Clockwise 1 Anticlock -1 No thing 0
+        //position: [-1,1,-1,1,-1,1][paddlePos],
+        position: 0,
+        movement: 0 // Clockwise 1 Anticlock -1 No thing 0
     });
     paddle.calcPos = function() {
         this.attr({
@@ -59,20 +58,8 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     };
     paddle.calcPos();
     paddle.bind('EnterFrame', function () {
-        if (this.movement === 1) {
-            if (this.position < 1) {
-                this.position += 0.05;
-            } else {
-                this.movement = -1;
-            }
-        } else if (this.movement === -1) {
-            if (this.position > -1) {
-                this.position -= 0.05;
-            } else {
-                this.movement = 1;
-            }
-        } else {
-            // No movement
+        if (this.position < 1 && this.position > -1) {
+            this.position += movement * 0.05;
         }
         this.calcPos();
     });
@@ -90,10 +77,14 @@ function createBall() {
             y: center,
             h: ballRadius,
             w: ballRadius,
-            dx: Math.random()*2,
-            dy: Math.random()*2
+            dx: (Math.random()-0.5)*4,
+            dy: (Math.random()-0.5)*4
         });
         ball.bind('EnterFrame', function() {
+            if (this.dx === 0 && this.dy === 0) {
+                this.dx = (Math.random()-0.5)*4;
+                this.dy = (Math.random()-0.5)*4;
+            }
             this.x += this.dx;
             this.y += this.dy;
         });
@@ -106,6 +97,8 @@ function createBall() {
         ball.onHit('Wall', function() {
             console.log('Hit wall');
             this.destroy();
+            number_live_balls--;
+            createBall();
         });
         console.log("Ball Created");
     } else {
@@ -113,11 +106,19 @@ function createBall() {
     }
 }
 
-// Server ping
-function paddleMovements() {
+function createPowerup() {
 
 }
 
+var paddleRequest = new XMLHttpRequest();
+paddleRequest.onreadystatechange = function() {
+    if (this.readyState === 4 && this.status === 200) {
+        paddles = paddleRequest.responseText;
+    }
+};
+
+paddleRequest.open("GET", "PaddleRequest", true);
+
 createBall();
 setInterval(createBall, 3000);
-// setInterval(paddleMovements, 50);
+setInterval(paddleRequest.send(), 50);
