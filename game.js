@@ -15,6 +15,7 @@ var topRadius = 2 * radius * Math.tan(angleRad/2);
 var number_live_balls = 0; // Number of balls currently
 var max_balls = 4; // The maximum number of balls
 var ballRadius = 10;
+var ballAcceleration = 5;
 
 Crafty.init(windowSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
@@ -36,9 +37,7 @@ for(var outerPos = 0; outerPos < playerNum; outerPos++){
 // Creates the paddles
 for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     // Create a paddle
-    var paddle = Crafty.e('Paddle, 2D, DOM, Color, Collision, WiredHitBox');
-
-	//paddle.debugStroke("green");
+    var paddle = Crafty.e('Paddle, 2D, DOM, Color, Collision');
 
     paddle.color(colours[paddlePos]);
     paddle.attr({
@@ -77,8 +76,8 @@ function createBall() {
             y: center,
             h: ballRadius,
             w: ballRadius,
-            dx: (Math.random()-0.5)*4,
-            dy: (Math.random()-0.5)*4
+            dx: (Math.random()-0.5)*ballAcceleration,
+            dy: (Math.random()-0.5)*ballAcceleration
         });
         ball.bind('EnterFrame', function() {
             if (this.dx === 0 && this.dy === 0) {
@@ -116,7 +115,6 @@ paddleRequest.onreadystatechange = function() {
         paddles = paddleRequest.responseText;
     }
 };
-
 paddleRequest.open("GET", "PaddleRequest", true);
 
 createBall();
