@@ -1,28 +1,31 @@
 Crafty.init(1000, 1100);
-Crafty.background('black');
+Crafty.background('white');
 
 // Paddles
 // [X, Y, Angle, Colour]
-var paddleInfos = [
-    [],
-    [],
-    [],
-    [],
-    [],
-    []];
-var paddleWidth = 0;
-var paddleLength = 0;
+var center = 500;
+var radius = 100;
+var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray'];
+
+var paddleWidth = 10;
+var paddleLength = 100;
+var angle = 360/6;
+var playerNum = 6;
 
 var number_live_balls = 0;
 var max_balls = 4;
 
-for (var paddleInfo in paddleInfo) {
-    Crafty.e('Paddle, 2D, Color')
-        .color(paddleInfo[3])
-        .attr({x: paddleInfo[0], y: paddleInfo[1],
+for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
+    var newThing = Crafty.e('Paddle, 2D, Color');
+    newThing.color(colours[paddlePos]);
+    newThing.attr({
+            x: center + radius*Math.sin(paddlePos*angle),
+            y: center + radius*Math.cos(paddlePos*angle),
             w: paddleWidth, h: paddleLength,
-            rotation: paddleInfo[2]
+            rotate: paddlePos*angle
         });
+
+    console.log(newThing);
 }
 
 function createBall() {
@@ -34,10 +37,9 @@ function createBall() {
 
 }
 
-
 // Server ping
 function paddleMovements() {
 
 }
 
-setInterval(createBall, 5000)
+// setInterval(createBall, 5000);
