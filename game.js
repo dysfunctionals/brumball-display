@@ -247,14 +247,15 @@ function createPowerup(index) {
             case 4:
                 powerup.runPowerup = function () {
                     Crafty('Ball').each(function () {
-                        this.dx *= 3;
-                        this.dy *= 3;
+                        this.dx *= 2;
+                        this.dy *= 2;
                     });
                 };
                 break;
 
             default:
                 console.log('Unknown Powerup id ' + powerUpId);
+                break;
         }
     }
 }
