@@ -107,7 +107,7 @@ var scoreboard = Crafty.e('2D, DOM, Text');
 scoreboard.attr({y: 0, x: windowSize, w: scoreboardSize, h: windowSize});
 scoreboard.textFont({size: "4em"});
 scoreboard.updateText = function () {
-    text = "";
+    text = "Brumball <br><br>";
     for (var team = 0; team < playerNum; team++) {
         text += colours[team] + ": " + teamScores[team] + "<br>";
     }
