@@ -159,10 +159,9 @@ function paddleRequest() {
             console.log("Well something went wrong");
         } else {
             paddles = Crafty('Paddle');
-		paddles.each(function(i){
-			this.movement = data["data"][i];
-		//	console.log(this.movement);
-		});
+		    paddles.each(function(i){
+			    this.movement = data["data"][i];
+		    });
         }
     });
 }
