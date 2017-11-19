@@ -225,19 +225,18 @@ function createPowerup(index) {
                         setPaddleSize(Math.sin(time)*75+defaultPaddleLength);
                         time += 0.1;
                         if (time > 10) {
-                            clearInterval(dynamicMovement, 2000);
+                            clearInterval(dynamicMovement);
+                            setPaddleSize(defaultPaddleLength);
                         }
                     }, 50);
-
-                    setPaddleSize(defaultPaddleLength);
                 };
                 break;
 
             // massBallz
             case 3:
                 powerup.runPowerup = function() {
+                    maxBalls = maxMassBallz;
                     for (var ball = 0; ball < maxMassBallz; ball++) {
-                        maxBalls = maxMassBallz;
                         createBall();
                     }
                     maxBalls = defaultMaxBalls;
