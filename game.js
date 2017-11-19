@@ -170,9 +170,9 @@ function setPaddleSize(size) {
     });
 }
 
-function createPowerup() {
+function createPowerup(index) {
     if (number_live_powerup < maxPowerups) {
-        var powerUpId = Crafty.math.randomInt(0, 4);
+        var powerUpId = index;
         //var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, ' + powerupName[powerUpId]);
         var powerup = Crafty.e('Powerup, 2D, '+powerupName[powerUpId]+', Canvas, Collision, WiredHitBox');
         powerup.attr({
@@ -260,14 +260,14 @@ function paddleRequest() {
 
 Crafty.bind('KeyDown', function(e) {
     if (e.key == Crafty.keys.ENTER) {
-        createPowerup();
+        createPowerup(1);
     }
 });
 
 createBall();
 setInterval(createBall, createBallInterval);
 
-createPowerup();
+createPowerup(Crafty.math.randomInt(0, 4));
 setInterval(createPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
