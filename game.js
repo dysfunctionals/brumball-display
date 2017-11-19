@@ -220,16 +220,16 @@ function createPowerup(index) {
             // PaddleDynamic
             case 2:
                 powerup.runPowerup = function () {
-                    for (var width = defaultPaddleLength; width < maxPaddleLength; width+=5) {
-                        setPaddleSize(width);
-                    }
-                    for (var width = maxPaddleLength; width > minPaddleLength; width-=5) {
-                        setPaddleSize(width);
-                    }
-                    for (var width = minPaddleLength; width > defaultPaddleLength; width+=5) {
-                        setPaddleSize(width);
-                    }
-                    setPaddleSize(width);
+                    var time = 0;
+                    dynamicMovement = setInterval(function() {
+                        setPaddleSize(Math.sin(time)*75+defaultPaddleLength);
+                        time += 0.1;
+                        if (time > 10) {
+                            clearInterval(dynamicMovement, 2000);
+                        }
+                    }, 50);
+
+                    setPaddleSize(defaultPaddleLength);
                 };
                 break;
 
