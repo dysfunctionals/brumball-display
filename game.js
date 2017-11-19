@@ -32,6 +32,10 @@ var maxPowerups = 3;
 var powerupRadius = 40;
 var createPowerupInterval = 3000;
 
+Crafty.sprite(64, "powerupSprites.png",
+    {PaddleLonger:[0,0], PaddleShorter:[0,1], PaddleDynamic:[0,2], massBallz:[0,3], ballSpeed:[0,4], ballCurve:[0,5]});
+var powerupName = ["PaddleLonger", "PaddleShorter", "PaddleDynamic", "massBallz", "ballSpeed", "ballCurve"];
+
 Crafty.init(windowSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
 
@@ -131,9 +135,7 @@ function createBall() {
 function createPowerup() {
     if (number_live_powerup < maxPowerups) {
         var powerUpId = Crafty.math.randomInt(0, 4);
-        var powerUps = ["", "", "", ""];
-        Crafty.sprite("img/"+powerUps[powerUpId]);
-        var powerup = Crafty.e("PowerUp, 2D, DOM, Color, Collision");
+        var powerup = Crafty.e("PowerUp, 2D, DOM, Collision, "+powerupName[powerUpId]);
         powerup.attr({
             id: powerUpId,
             x: center+(Math.random()-0.5*200),
@@ -143,7 +145,7 @@ function createPowerup() {
         powerup.onHit('Ball', function() {
             console.log("Powerup Hit");
             number_live_powerup--;
-            // TODO run powerup function
+            this.runPowerup();
             this.destroy();
         });
         number_live_powerup++;
