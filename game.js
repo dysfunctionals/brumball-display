@@ -38,8 +38,8 @@ var createPowerupInterval = 3000;
 var maxMassBallz = 25;
 
 var teamScores = [0, 0, 0, 0, 0, 0];
-var paddleHitScore = 1;
-var wallHitScore = -3;
+var paddleHitScore = 3;
+var wallHitScore = -1;
 
 Crafty.sprite(64, "paddleLonger.png", {PaddleLonger:[0,0]});
 Crafty.sprite(64, "paddleShorter.png", {PaddleShorter:[0,0]});
@@ -62,9 +62,6 @@ for (var outerPos = 0; outerPos < playerNum; outerPos++) {
         w: outerLength + 4,
         h: 5,
         rotation: -outerPos * angleDeg
-    });
-    wall.onHit('Ball', function () {
-        teamScores[this.id] += wallHitScore;
     });
     wall.color("black");
 }
@@ -102,17 +99,21 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     });
 
     paddle.onHit('Ball', function () {
-        teamScores[this.id] += paddleHitScore;
+	    console.log("Hello world" + paddle.id);
+        teamScores[paddle.id] += paddleHitScore;
     });
 }
 
 var scoreboard = Crafty.e('2D, DOM, Text');
 scoreboard.attr({x: 0, y: windowSize, w: windowSize, h: scoreboardHeight});
+scoreboard.textFont({size: "2em"});
 scoreboard.updateText = function () {
-    this.text = "Scoreboard ";
+    var text = "Scoreboard ";
     for (var team = 0; team < playerNum; team++) {
-        this.text += colours[team] + ": " + teamScores[team] + " ";
+        text += colours[team] + ": " + teamScores[team] + " ";
     }
+    scoreboard.text(text);
+	console.log(text);
 };
 setInterval(scoreboard.updateText, 200);
 
@@ -147,14 +148,16 @@ function createBall() {
             this.y += this.dy;
         });
 
-        ball.onHit('Paddle', function () {
+        ball.onHit('Paddle', function (hit) {
+            teamScores[hit[0].obj.id] += paddleHitScore;
             this.x += -this.dx;
             this.y += -this.dy;
 
             this.dx = -(this.dx + (Math.random() * paddleHitMultiplier));
             this.dy = -(this.dy + (Math.random() * paddleHitMultiplier));
         });
-        ball.onHit('Wall', function () {
+        ball.onHit('Wall', function (hit) {
+            teamScores[hit[0].obj.id] += wallHitScore;
             this.destroy();
             number_live_balls--;
             createBall();
@@ -254,10 +257,10 @@ function paddleRequest() {
 }
 
 
-//createBall();
-//setInterval(createBall, createBallInterval);
+createBall();
+setInterval(createBall, createBallInterval);
 
 //createPowerup();
 //setInterval(createPowerup, createPowerupInterval);
 
-//setInterval(paddleRequest, 100);
+setInterval(paddleRequest, 100);
