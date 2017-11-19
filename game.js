@@ -41,15 +41,15 @@ var teamScores = [0, 0, 0, 0, 0, 0];
 var paddleHitScore = 1;
 var wallHitScore = -3;
 
+Crafty.init(windowSize, windowSize + scoreboardHeight); // Init the window
+Crafty.background('white'); // Sets the window background
+
 Crafty.sprite(64, "paddleLonger.png", {PaddleLonger:[0,0]});
 Crafty.sprite(64, "paddleShorter.png", {PaddleShorter:[0,0]});
 Crafty.sprite(64, "paddleDynamic.png", {PaddleDynamic:[0,0]});
 Crafty.sprite(64, "massBallz.png", {MassBallz:[0,0]});
 Crafty.sprite(64, "ballSpeed.png", {BallSpeed:[0,0]});
 var powerupName = ["PaddleLonger", "PaddleShorter", "PaddleDynamic", "MassBallz", "BallSpeed"];
-
-Crafty.init(windowSize, windowSize + scoreboardHeight); // Init the window
-Crafty.background('white'); // Sets the window background
 
 var outerRadius = radius + 10;
 var outerLength = outerRadius * 2 * Math.tan(angleRad / 2);
@@ -171,22 +171,30 @@ function setPaddleSize(size) {
 
 function createPowerup() {
     if (number_live_powerup < maxPowerups) {
-        var powerUpId = Crafty.math.randomInt(0, 5);
-        var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, WiredHitBox, ' + powerupName[powerUpId]);
+        var powerUpId = Crafty.math.randomInt(0, 4);
+        //var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, ' + powerupName[powerUpId]);
+        console.log('Create powerup');
+        var powerup = Crafty.e('Powerup, 2D, '+powerupName[powerUpId]+', Canvas, Collision, WiredHitBox');
         powerup.attr({
-            id: powerUpId,
-            x: center,
-            y: center,
-            w: powerupRadius,
-            h: powerupRadius
+            x: center+(Math.random()-0.5)*300,
+            y: center+(Math.random()-0.5)*300,
+            w: 100, h: 100
         });
-        powerup.map = new Crafty.polygon([32, 120], [96, 120], [128, 64], [96, 8], [0, 64]);
+        powerup.collision(new Crafty.polygon(
+            //32, 120, 96, 120, 128, 64, 96, 0, 32, 0, 0, 64
+            //22, 110, 86, 110, 118, 54, 86, -10, 22, -10, -10, 54
+            17, 105, 84, 105, 115, 50, 84, -15, 17, -15, -15, 50
+        ));
+        powerup.debugStroke('Black');
+
         powerup.onHit('Ball', function () {
             console.log('Powerup Hit by ball');
             number_live_powerup--;
             this.runPowerup();
             this.destroy();
         });
+        number_live_powerup++;
+
         switch (powerUpId) {
             // Increase Paddle Size
             case 0:
@@ -234,9 +242,6 @@ function createPowerup() {
                 };
                 break;
         }
-
-        number_live_powerup++;
-        console.log('Create powerup');
     }
 }
 
@@ -253,11 +258,10 @@ function paddleRequest() {
     });
 }
 
+createBall();
+setInterval(createBall, createBallInterval);
 
-//createBall();
-//setInterval(createBall, createBallInterval);
-
-//createPowerup();
-//setInterval(createPowerup, createPowerupInterval);
+createPowerup();
+setInterval(createPowerup, createPowerupInterval);
 
 //setInterval(paddleRequest, 100);
