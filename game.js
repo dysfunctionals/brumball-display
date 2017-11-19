@@ -264,10 +264,13 @@ Crafty.bind('KeyDown', function(e) {
     }
 });
 
+function createRandomPowerup(){
+    createPowerup(Crafty.math.randomInt(0, 4));
+}
+
 createBall();
 setInterval(createBall, createBallInterval);
 
-createPowerup(Crafty.math.randomInt(0, 4));
-setInterval(createPowerup, createPowerupInterval);
+setInterval(createRandomPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
