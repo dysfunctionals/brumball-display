@@ -7,8 +7,7 @@ var url = "/api"; // Url to the server
 
 // Paddle variables
 var paddleThickness = 10; // Paddle Thickness
-var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray']; // Paddle Colours
-var englishColours = ['blue', 'red', 'purple', 'green', 'pink', 'grey'];
+var colours = ['blue', 'red', 'purple', 'green', 'pink', 'orange']; // Paddle Colours
 var powerupDelay = 3000;
 var defaultPaddleLength = 125;
 var minPaddleLength = 75;
@@ -110,7 +109,7 @@ scoreboard.textFont({size: "4em"});
 scoreboard.updateText = function () {
     text = "";
     for (var team = 0; team < playerNum; team++) {
-        text += englishColours[team] + ": " + teamScores[team] + "<br>";
+        text += colours[team] + ": " + teamScores[team] + "<br>";
     }
     scoreboard.text(text);
 };
