@@ -225,19 +225,19 @@ function createPowerup(index) {
                         setPaddleSize(Math.sin(time)*75+defaultPaddleLength);
                         time += 0.1;
                         if (time > 10) {
-                            clearInterval(dynamicMovement);
-                            setPaddleSize(defaultPaddleLength);
+                            clearInterval(dynamicMovement, 2000);
                         }
                     }, 50);
 
+                    setPaddleSize(defaultPaddleLength);
                 };
                 break;
 
             // massBallz
             case 3:
                 powerup.runPowerup = function() {
-                    maxBalls = maxMassBallz;
                     for (var ball = 0; ball < maxMassBallz; ball++) {
+                        maxBalls = maxMassBallz;
                         createBall();
                     }
                     maxBalls = defaultMaxBalls;
@@ -290,14 +290,6 @@ Crafty.bind('KeyDown', function(e) {
     }
 });
 
-Crafty.bind('KeyDown', function(e) {
-   if (e.key == Crafty.keys.C) {
-        console.log("CATZZZZ");
-        document.getElementsByClassName("main").src = "https://media.giphy.com/media/PUBxelwT57jsQ/giphy.gif";
-        document.getElementsByClassName("main").height = "100%";
-       document.getElementsByClassName("main").width = "100%";
-   }
-});
 function createRandomPowerup(){
     createPowerup(Crafty.math.randomInt(0, 4));
 }
@@ -309,35 +301,38 @@ function advanceDemo(){
         case 0:
             defaultMaxBalls = 1;
             maxBalls = 1;
+            demoState++;
             break;
         case 1:
             defaultMaxBalls = 4;
             maxBalls = 4;
+            demoState++;
             break;
         case 2:
             createPowerup(1);
+            demoState++;
             break;
         case 3:
             createPowerup(0);
+            demoState++;
             break;
         case 4:
             createPowerup(2);
+            demoState++;
             break;
         case 5:
             createPowerup(4);
+            demoState++;
             break;
         case 6:
             createPowerup(3);
+            demoState++;
             break;
         case 7:
+            maxMassBalls = 250;
             createPowerup(3);
-            break;
-        case 8:
-            setInterval(createRandomPowerup, createPowerupInterval);
-            break;
-
+            demoState++;
     }
-    demoState++;
 }
 
 function toTitleCase(str) {
@@ -346,7 +341,10 @@ function toTitleCase(str) {
     });
 }
 
+
 createBall();
 setInterval(createBall, createBallInterval);
+
+//setInterval(createRandomPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
