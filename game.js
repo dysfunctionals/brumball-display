@@ -73,9 +73,9 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     };
     paddle.calcPos();
     paddle.bind('EnterFrame', function () {
-        if (this.position < 1 && this.position > -1) {
-            this.position += this.movement * 0.05;
-        }
+	this.position += this.movement * 0.05;
+	if(this.position > 1) this.position = 1;
+	if(this.position < -1) this.position = -1;
         this.calcPos();
     });
 }
@@ -157,9 +157,10 @@ function paddleRequest() {
             console.log("Well something went wrong");
         } else {
             paddles = Crafty('Paddle');
-            for (paddlePos = 0; paddlePos < playerNum; paddlePos++) {
-                paddles[paddlePos].movment = data['data'][paddlePos];
-            }
+		paddles.each(function(i){
+			this.movement = data["data"][i];
+		//	console.log(this.movement);
+		});
         }
     });
 }
