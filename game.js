@@ -1,6 +1,6 @@
 // window Variables
 var windowSize = 1000; // Window Size
-var scoreboardHeight = 100;
+var scoreboardSize = 300;
 var center = windowSize / 2; // Window Center
 var radius = windowSize / 3; // Window Radius
 var url = "/api"; // Url to the server
@@ -8,6 +8,7 @@ var url = "/api"; // Url to the server
 // Paddle variables
 var paddleThickness = 10; // Paddle Thickness
 var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray']; // Paddle Colours
+var englishColours = ['blue', 'red', 'purple', 'green', 'pink', 'grey'];
 var powerupDelay = 3000;
 var defaultPaddleLength = 125;
 var minPaddleLength = 75;
@@ -33,7 +34,7 @@ var createBallInterval = 3000;
 // Powerup variables
 var number_live_powerup = 0;
 var maxPowerups = 3;
-var powerupRadius = 40;
+var powerupRadius = 100;
 var createPowerupInterval = 3000;
 var maxMassBallz = 25;
 
@@ -41,7 +42,7 @@ var teamScores = [0, 0, 0, 0, 0, 0];
 var paddleHitScore = 3;
 var wallHitScore = -1;
 
-Crafty.init(windowSize, windowSize + scoreboardHeight); // Init the window
+Crafty.init(windowSize + scoreboardSize, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
 
 Crafty.sprite(64, "paddleLonger.png", {PaddleLonger:[0,0]});
@@ -104,12 +105,12 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
 }
 
 var scoreboard = Crafty.e('2D, DOM, Text');
-scoreboard.attr({x: 0, y: windowSize-scoreboardHeight, w: windowSize, h: scoreboardHeight});
-scoreboard.textFont({size: "2em"});
+scoreboard.attr({y: 0, x: windowSize, w: scoreboardSize, h: windowSize});
+scoreboard.textFont({size: "4em"});
 scoreboard.updateText = function () {
-    var text = "Scoreboard ";
+    text = "";
     for (var team = 0; team < playerNum; team++) {
-        text += colours[team] + ": " + teamScores[team] + " ";
+        text += englishColours[team] + ": " + teamScores[team] + "<br>";
     }
     scoreboard.text(text);
 };
@@ -178,7 +179,7 @@ function createPowerup() {
         powerup.attr({
             x: center+(Math.random()-0.5)*300,
             y: center+(Math.random()-0.5)*300,
-            w: 100, h: 100
+            w: powerupRadius, h: powerupRadius
         });
         powerup.collision(new Crafty.polygon(
             17, 105, 84, 105, 115, 50, 84, -15, 17, -15, -15, 50
