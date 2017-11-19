@@ -8,8 +8,11 @@ var url = "http://localhost:8080"; // Url to the server
 
 // Paddle variables
 var paddleThickness = 10; // Paddle Thickness
-var paddleLength = 125; // Paddle Length
 var colours = ['blue', 'red', 'purple', 'green', 'pink', 'gray']; // Paddle Colours
+var powerupDelay = 3000;
+var defaultPaddleLength = 125;
+var minPaddleLength = 75;
+var maxPaddleLength = 200;
 
 // Setup variables
 var playerNum = 6; // Number of players
@@ -19,7 +22,8 @@ var topRadius = 2 * radius * Math.tan(angleRad/2);
 
 // Balls variables
 var number_live_balls = 0; // Number of balls currently
-var max_balls = 5; // The maximum number of balls
+var defaultMaxBalls = 4;
+var maxBalls = defaultMaxBalls; // The maximum number of balls
 var ballRadius = 10;
 var ballAcceleration = 5;
 var maxBallSpeed = 3;
@@ -32,6 +36,7 @@ var number_live_powerup = 0;
 var maxPowerups = 3;
 var powerupRadius = 40;
 var createPowerupInterval = 3000;
+var maxMassBallz = 25;
 
 var teamScores = [0, 0, 0, 0, 0, 0];
 var paddleHitScore = 1;
@@ -72,11 +77,12 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         id: paddlePos,
         originalX: center + (topRadius * Math.sin(paddlePos * angleRad - (angleRad / 2))),
         originalY: center + (topRadius * Math.cos(paddlePos * angleRad - (angleRad / 2))),
-        w: paddleLength, h: paddleThickness,
+        w: defaultPaddleLength, h: paddleThickness,
+        paddleLength: defaultPaddleLength,
         rotation: -paddlePos * angleDeg,
         //position: [-1,1,-1,1,-1,1][paddlePos],
         position: 0,
-        movement: 0.2 // Clockwise 1 Anticlock -1 No thing 0
+        movement: 0 // Clockwise 1 Anticlock -1 No thing 0
     });
 
     paddle.calcPos = function() {
@@ -155,6 +161,13 @@ function createBall() {
     }
 }
 
+function setPaddleSize(size) {
+    Crafty('Paddle').each(function(paddle) {
+        paddle.paddleLength = size;
+        paddle.w = size;
+    });
+}
+
 function createPowerup() {
     if (number_live_powerup < maxPowerups) {
         var powerUpId = Crafty.math.randomInt(0, 4);
@@ -171,6 +184,51 @@ function createPowerup() {
             this.runPowerup();
             this.destroy();
         });
+        switch(powerUpId) {
+            // Increase Paddle Size
+            case 0:
+                setPaddleSize(maxPaddleLength);
+                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                break;
+
+            // Decrease Paddle size
+            case 1:
+                setPaddleSize(minPaddleLength);
+                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                break;
+
+            // PaddleDynamic
+            case 2:
+                setPaddleSize(minPaddleLength);
+                setTimeout(setPaddleSize, powerupDelay/2, maxPaddleLengthx);
+                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                break;
+
+            // massBallz
+            case 3:
+                for (var ball = 0; ball < maxMassBallz; ball++) {
+                    maxBalls = maxMassBallz;
+                    createBall();
+                }
+                maxBalls = defaultMaxBalls;
+                break;
+
+            // ballSpeed
+            case 4:
+                Crafty('Ball').each(function(ball) {
+                    ball.dx *= 5;
+                    ball.dy *= 5;
+                });
+                break;
+
+            // ballCurve
+            case 5:
+                console.log('Ball Curve');
+                break;
+
+
+        }
+
         number_live_powerup++;
         console.log('Create powerup');
     }
