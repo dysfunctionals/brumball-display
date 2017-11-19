@@ -41,7 +41,7 @@ var teamScores = [0, 0, 0, 0, 0, 0];
 var paddleHitScore = 3;
 var wallHitScore = -1;
 
-Crafty.init(windowSize + scoreboardSize, windowSize); // Init the window
+Crafty.init(windowSize + scoreboardSize + 500, windowSize); // Init the window
 Crafty.background('white'); // Sets the window background
 
 Crafty.sprite(64, "paddleLonger.png", {PaddleLonger:[0,0]});
@@ -132,13 +132,14 @@ function createBall() {
         });
 
         ball.bind('EnterFrame', function () {
-            if (this.dx < minBallSpeed && this.dy < minBallSpeed) {
-                this.dx = (Math.random() - 0.5) * ballAcceleration;
+            if (Math.pow(this.dx, 2) + Math.pow(this.dy, 2) < Math.pow(minBallSpeed, 2)) {
+                this.dx = (Math.random() - 0.5)  * ballAcceleration;
                 this.dy = (Math.random() - 0.5) * ballAcceleration;
             }
-            if (this.dx > maxBallSpeed) {
+
+            if (Math.abs(this.dx) > maxBallSpeed) {
                 this.dx = maxBallSpeed;
-            } else if (this.dy > maxBallSpeed) {
+            } else if (Math.abs(this.dy) > maxBallSpeed) {
                 this.dy = maxBallSpeed;
             }
 
@@ -148,8 +149,8 @@ function createBall() {
 
         ball.onHit('Paddle', function (hit) {
             teamScores[hit[0].obj.id] += paddleHitScore;
-            this.x += -this.dx;
-            this.y += -this.dy;
+            this.x += -this.dx*2;
+            this.y += -this.dy*2;
 
             this.dx = -(this.dx + (Math.random() * paddleHitMultiplier));
             this.dy = -(this.dy + (Math.random() * paddleHitMultiplier));
@@ -171,7 +172,9 @@ function setPaddleSize(size) {
 }
 
 function createPowerup(index) {
-    if (number_live_powerup < maxPowerups) {
+    if (index == undefined) {
+        console.log('Error undefined index');
+    } else if (number_live_powerup < maxPowerups) {
         var powerUpId = index;
         //var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, ' + powerupName[powerUpId]);
         var powerup = Crafty.e('Powerup, 2D, '+powerupName[powerUpId]+', Canvas, Collision, WiredHitBox');
@@ -212,9 +215,16 @@ function createPowerup(index) {
             // PaddleDynamic
             case 2:
                 powerup.runPowerup = function () {
-                    setPaddleSize(minPaddleLength);
-                    setTimeout(setPaddleSize, powerupDelay / 2, maxPaddleLength);
-                    setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                    for (var width = defaultPaddleLength; width < maxPaddleLength; width+=5) {
+                        setPaddleSize(width);
+                    }
+                    for (var width = maxPaddleLength; width > minPaddleLength; width-=5) {
+                        setPaddleSize(width);
+                    }
+                    for (var width = minPaddleLength; width > defaultPaddleLength; width+=5) {
+                        setPaddleSize(width);
+                    }
+                    setPaddleSize(width);
                 };
                 break;
 
@@ -261,6 +271,17 @@ function paddleRequest() {
 Crafty.bind('KeyDown', function(e) {
     if (e.key == Crafty.keys.ENTER) {
         advanceDemo();
+    }
+});
+
+Crafty.bind('KeyDown', function(e) {
+    if (e.key == Crafty.keys.M) {
+        console.log('Mark is the best');
+        maxBalls = 200;
+        for (var i = 0; i < 200; i++){
+            createBall();
+        }
+        number_live_balls = 4;
     }
 });
 
