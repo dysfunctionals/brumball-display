@@ -21,7 +21,7 @@ var topRadius = 2 * radius * Math.tan(angleRad / 2);
 
 // Balls variables
 var number_live_balls = 0; // Number of balls currently
-var defaultMaxBalls = 4;
+var defaultMaxBalls = 0;
 var maxBalls = defaultMaxBalls; // The maximum number of balls
 var ballRadius = 10;
 var ballAcceleration = 5;
@@ -107,7 +107,7 @@ var scoreboard = Crafty.e('2D, DOM, Text');
 scoreboard.attr({y: 0, x: windowSize, w: scoreboardSize, h: windowSize});
 scoreboard.textFont({size: "4em"});
 scoreboard.updateText = function () {
-    text = "Brumball <br><br>";
+    text = "brumball.com <br><br>";
     for (var team = 0; team < playerNum; team++) {
         text += colours[team] + ": " + teamScores[team] + "<br>";
     }
@@ -260,7 +260,7 @@ function paddleRequest() {
 
 Crafty.bind('KeyDown', function(e) {
     if (e.key == Crafty.keys.ENTER) {
-        createPowerup(1);
+        advanceDemo();
     }
 });
 
@@ -268,9 +268,50 @@ function createRandomPowerup(){
     createPowerup(Crafty.math.randomInt(0, 4));
 }
 
+var demoState = 0;
+
+function advanceDemo(){
+    switch(demoState){
+        case 0:
+            defaultMaxBalls = 1;
+            maxBalls = 1;
+            demoState++;
+            break;
+        case 1:
+            defaultMaxBalls = 4;
+            maxBalls = 4;
+            demoState++;
+            break;
+        case 2:
+            createPowerup(1);
+            demoState++;
+            break;
+        case 3:
+            createPowerup(0);
+            demoState++;
+            break;
+        case 4:
+            createPowerup(2);
+            demoState++;
+            break;
+        case 5:
+            createPowerup(4);
+            demoState++;
+            break;
+        case 6:
+            createPowerup(3);
+            demoState++;
+            break;
+        case 7:
+            maxMassBalls = 250;
+            createPowerup(3);
+            demoState++;
+    }
+}
+
 createBall();
 setInterval(createBall, createBallInterval);
 
-setInterval(createRandomPowerup, createPowerupInterval);
+//setInterval(createRandomPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
