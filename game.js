@@ -199,6 +199,7 @@ function createPowerup() {
             // Increase Paddle Size
             case 0:
                 powerup.runPowerup = function () {
+                    console.log("Increase paddle size powerup");
                     setPaddleSize(maxPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
                 };
@@ -207,6 +208,7 @@ function createPowerup() {
             // Decrease Paddle size
             case 1:
                 powerup.runPowerup = function() {
+                    console.log("Decrease paddle size powerup");
                     setPaddleSize(minPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
                 };
@@ -215,6 +217,7 @@ function createPowerup() {
             // PaddleDynamic
             case 2:
                 powerup.runPowerup = function () {
+                    console.log("Paddle Dynamic powerup");
                     setPaddleSize(minPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay / 2, maxPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
@@ -224,6 +227,7 @@ function createPowerup() {
             // massBallz
             case 3:
                 powerup.runPowerup = function() {
+                    console.log("Mass ballz powerup");
                     for (var ball = 0; ball < maxMassBallz; ball++) {
                         maxBalls = maxMassBallz;
                         createBall();
@@ -235,6 +239,7 @@ function createPowerup() {
             // ballSpeed
             case 4:
                 powerup.runPowerup = function () {
+                    console.log("Ball Speed powerup");
                     Crafty('Ball').each(function (ball) {
                         ball.dx *= 5;
                         ball.dy *= 5;
