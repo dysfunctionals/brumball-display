@@ -304,8 +304,8 @@ function advanceDemo(){
             demoState++;
             break;
         case 1:
-            defaultMaxBalls = 4;
-            maxBalls = 4;
+            defaultMaxBalls = 5;
+            maxBalls = 5;
             demoState++;
             break;
         case 2:
@@ -329,9 +329,9 @@ function advanceDemo(){
             demoState++;
             break;
         case 7:
-            maxMassBalls = 250;
-            createPowerup(3);
+            setInterval(createRandomPowerup, createPowerupInterval);
             demoState++;
+            break;
     }
 }
 
