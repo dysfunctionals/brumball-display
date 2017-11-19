@@ -1,9 +1,8 @@
-
 // window Variables
 var windowSize = 1000; // Window Size
 var scoreboardHeight = 100;
-var center = windowSize/2; // Window Center
-var radius = windowSize/3; // Window Radius]
+var center = windowSize / 2; // Window Center
+var radius = windowSize / 3; // Window Radius
 var url = "http://localhost:8080"; // Url to the server
 
 // Paddle variables
@@ -16,9 +15,9 @@ var maxPaddleLength = 200;
 
 // Setup variables
 var playerNum = 6; // Number of players
-var angleRad = 2*Math.PI/playerNum; // Gets the angle between players
-var angleDeg = 360/playerNum; // Gets the angle between players
-var topRadius = 2 * radius * Math.tan(angleRad/2);
+var angleRad = 2 * Math.PI / playerNum; // Gets the angle between players
+var angleDeg = 360 / playerNum; // Gets the angle between players
+var topRadius = 2 * radius * Math.tan(angleRad / 2);
 
 // Balls variables
 var number_live_balls = 0; // Number of balls currently
@@ -42,29 +41,32 @@ var teamScores = [0, 0, 0, 0, 0, 0];
 var paddleHitScore = 1;
 var wallHitScore = -3;
 
-Crafty.sprite(64, "powerupSprites.png",
-    {PaddleLonger:[0,0], PaddleShorter:[0,1], PaddleDynamic:[0,2], massBallz:[0,3], ballSpeed:[0,4], ballCurve:[0,5]});
-var powerupName = ["PaddleLonger", "PaddleShorter", "PaddleDynamic", "massBallz", "ballSpeed", "ballCurve"];
+Crafty.sprite(64, "paddleLonger.png", {PaddleLonger:[0,0]});
+Crafty.sprite(64, "paddleShorter.png", {PaddleShorter:[0,0]});
+Crafty.sprite(64, "paddleDynamic.png", {PaddleDynamic:[0,0]});
+Crafty.sprite(64, "massBallz.png", {MassBallz:[0,0]});
+Crafty.sprite(64, "ballSpeed.png", {BallSpeed:[0,0]});
+var powerupName = ["PaddleLonger", "PaddleShorter", "PaddleDynamic", "MassBallz", "BallSpeed"];
 
 Crafty.init(windowSize, windowSize + scoreboardHeight); // Init the window
 Crafty.background('white'); // Sets the window background
 
 var outerRadius = radius + 10;
-var outerLength = outerRadius * 2 * Math.tan(angleRad/2);
-for(var outerPos = 0; outerPos < playerNum; outerPos++){
-	var wall = Crafty.e("Wall, 2D, DOM, Color, Collision");
-	wall.attr({
+var outerLength = outerRadius * 2 * Math.tan(angleRad / 2);
+for (var outerPos = 0; outerPos < playerNum; outerPos++) {
+    var wall = Crafty.e("Wall, 2D, DOM, Color, Collision");
+    wall.attr({
         id: outerPos,
-		x: center + (outerLength * Math.sin(outerPos * angleRad - (angleRad/2))),
-		y: center + (outerLength * Math.cos(outerPos * angleRad - (angleRad/2))),
-		w: outerLength + 4,
-		h: 5,
-		rotation: -outerPos * angleDeg
-	});
-	wall.onHit('Ball', function() {
-	    teamScores[this.id] += wallHitScore;
+        x: center + (outerLength * Math.sin(outerPos * angleRad - (angleRad / 2))),
+        y: center + (outerLength * Math.cos(outerPos * angleRad - (angleRad / 2))),
+        w: outerLength + 4,
+        h: 5,
+        rotation: -outerPos * angleDeg
     });
-	wall.color("black");
+    wall.onHit('Ball', function () {
+        teamScores[this.id] += wallHitScore;
+    });
+    wall.color("black");
 }
 
 // Creates the paddles
@@ -85,36 +87,37 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         movement: 0 // Clockwise 1 Anticlock -1 No thing 0
     });
 
-    paddle.calcPos = function() {
+    paddle.calcPos = function () {
         this.attr({
-            x: this.originalX + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.cos(this.rotation * 2*Math.PI/360)),
-            y: this.originalY + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.sin(this.rotation * 2*Math.PI/360))
+            x: this.originalX + ((topRadius / 2 - this.paddleLength / 2) * (this.position + 1) * Math.cos(this.rotation * 2 * Math.PI / 360)),
+            y: this.originalY + ((topRadius / 2 - this.paddleLength / 2) * (this.position + 1) * Math.sin(this.rotation * 2 * Math.PI / 360))
         });
     };
 
-    paddle.bind('EnterFrame', function() {
+    paddle.bind('EnterFrame', function () {
         this.position += this.movement * 0.05;
         if (this.position > 1) this.position = 1;
         if (this.position < -1) this.position = -1;
         this.calcPos();
     });
 
-    paddle.onHit('Ball', function() {
+    paddle.onHit('Ball', function () {
         teamScores[this.id] += paddleHitScore;
     });
 }
 
 var scoreboard = Crafty.e('2D, DOM, Text');
-scoreboard.attr({x:0, y:windowSize, w:windowSize, h:scoreboardHeight});
-scoreboard.updateText = function() {
+scoreboard.attr({x: 0, y: windowSize, w: windowSize, h: scoreboardHeight});
+scoreboard.updateText = function () {
     this.text = "Scoreboard ";
     for (var team = 0; team < playerNum; team++) {
-        this.text += colours[team] + ": " + teamScore[team] + " ";
+        this.text += colours[team] + ": " + teamScores[team] + " ";
     }
 };
+setInterval(scoreboard.updateText, 200);
 
 function createBall() {
-    if (number_live_balls < max_balls) {
+    if (number_live_balls < maxBalls) {
         number_live_balls++;
 
         var ball = Crafty.e('Ball, 2D, DOM, Color, Collision');
@@ -125,14 +128,14 @@ function createBall() {
             y: center,
             h: ballRadius,
             w: ballRadius,
-            dx: (Math.random()-0.5)*ballAcceleration,
-            dy: (Math.random()-0.5)*ballAcceleration
+            dx: (Math.random() - 0.5) * ballAcceleration,
+            dy: (Math.random() - 0.5) * ballAcceleration
         });
 
-        ball.bind('EnterFrame', function() {
+        ball.bind('EnterFrame', function () {
             if (this.dx < minBallSpeed && this.dy < minBallSpeed) {
-                this.dx = (Math.random()-0.5)*6;
-                this.dy = (Math.random()-0.5)*6;
+                this.dx = (Math.random() - 0.5) * 6;
+                this.dy = (Math.random() - 0.5) * 6;
             }
             if (this.dx > maxBallSpeed) {
                 this.dx = maxBallSpeed;
@@ -144,16 +147,14 @@ function createBall() {
             this.y += this.dy;
         });
 
-        ball.onHit('Paddle', function() {
-            console.log('Hit paddle');
+        ball.onHit('Paddle', function () {
             this.x += -this.dx;
             this.y += -this.dy;
 
             this.dx = -(this.dx + (Math.random() * paddleHitMultiplier));
             this.dy = -(this.dy + (Math.random() * paddleHitMultiplier));
         });
-        ball.onHit('Wall', function() {
-            console.log('Hit wall');
+        ball.onHit('Wall', function () {
             this.destroy();
             number_live_balls--;
             createBall();
@@ -162,7 +163,7 @@ function createBall() {
 }
 
 function setPaddleSize(size) {
-    Crafty('Paddle').each(function(paddle) {
+    Crafty('Paddle').each(function (paddle) {
         paddle.paddleLength = size;
         paddle.w = size;
     });
@@ -170,63 +171,68 @@ function setPaddleSize(size) {
 
 function createPowerup() {
     if (number_live_powerup < maxPowerups) {
-        var powerUpId = Crafty.math.randomInt(0, 4);
-        var powerup = Crafty.e("PowerUp, 2D, DOM, Collision, "+powerupName[powerUpId]);
+        var powerUpId = Crafty.math.randomInt(0, 5);
+        var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, WiredHitBox, ' + powerupName[powerUpId]);
         powerup.attr({
             id: powerUpId,
-            x: center+(Math.random()-0.5*200),
-            y: center+(Math.random()-0.5*200),
-            color: 'red'
+            x: center,
+            y: center,
+            w: powerupRadius,
+            h: powerupRadius
         });
-        powerup.onHit('Ball', function() {
-            console.log("Powerup Hit");
+        powerup.map = new Crafty.polygon([32, 120], [96, 120], [128, 64], [96, 8], [0, 64]);
+        powerup.onHit('Ball', function () {
+            console.log('Powerup Hit by ball');
             number_live_powerup--;
             this.runPowerup();
             this.destroy();
         });
-        switch(powerUpId) {
+        switch (powerUpId) {
             // Increase Paddle Size
             case 0:
-                setPaddleSize(maxPaddleLength);
-                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                powerup.runPowerup = function () {
+                    setPaddleSize(maxPaddleLength);
+                    setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                };
                 break;
 
             // Decrease Paddle size
             case 1:
-                setPaddleSize(minPaddleLength);
-                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                powerup.runPowerup = function() {
+                    setPaddleSize(minPaddleLength);
+                    setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                };
                 break;
 
             // PaddleDynamic
             case 2:
-                setPaddleSize(minPaddleLength);
-                setTimeout(setPaddleSize, powerupDelay/2, maxPaddleLengthx);
-                setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                powerup.runPowerup = function () {
+                    setPaddleSize(minPaddleLength);
+                    setTimeout(setPaddleSize, powerupDelay / 2, maxPaddleLength);
+                    setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
+                };
                 break;
 
             // massBallz
             case 3:
-                for (var ball = 0; ball < maxMassBallz; ball++) {
-                    maxBalls = maxMassBallz;
-                    createBall();
-                }
-                maxBalls = defaultMaxBalls;
+                powerup.runPowerup = function() {
+                    for (var ball = 0; ball < maxMassBallz; ball++) {
+                        maxBalls = maxMassBallz;
+                        createBall();
+                    }
+                    maxBalls = defaultMaxBalls;
+                };
                 break;
 
             // ballSpeed
             case 4:
-                Crafty('Ball').each(function(ball) {
-                    ball.dx *= 5;
-                    ball.dy *= 5;
-                });
+                powerup.runPowerup = function () {
+                    Crafty('Ball').each(function (ball) {
+                        ball.dx *= 5;
+                        ball.dy *= 5;
+                    });
+                };
                 break;
-
-            // ballCurve
-            case 5:
-                console.log('Ball Curve');
-                break;
-
-
         }
 
         number_live_powerup++;
@@ -235,22 +241,23 @@ function createPowerup() {
 }
 
 function paddleRequest() {
-    $.get(url+"/paddles", function (data) {
+    $.get(url + "/paddles", function (data) {
         if (data.status == "fail") {
             console.log("Well something went wrong");
         } else {
             paddles = Crafty('Paddle');
-		    paddles.each(function(i){
-			    this.movement = data["data"][i];
-		    });
+            paddles.each(function (i) {
+                this.movement = data["data"][i];
+            });
         }
     });
 }
 
-createBall();
-setInterval(createBall, createBallInterval);
+
+//createBall();
+//setInterval(createBall, createBallInterval);
 
 //createPowerup();
 //setInterval(createPowerup, createPowerupInterval);
 
-setInterval(paddleRequest, 100);
+//setInterval(paddleRequest, 100);
