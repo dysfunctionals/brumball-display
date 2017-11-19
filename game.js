@@ -1,6 +1,6 @@
 // window Variables
 var windowSize = 1000; // Window Size
-var scoreboardSize = 300;
+var scoreboardSize = 600;
 var center = windowSize / 2; // Window Center
 var radius = windowSize / 3; // Window Radius
 var url = "/api"; // Url to the server
@@ -103,13 +103,18 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     });
 }
 
+var title = Crafty.e('2D, DOM, Text');
+title.attr({y: 0, x: windowSize, w: scoreboardSize, h: windowSize});
+title.textFont({size: "7em"});
+title.text("BrumBall.com");
+
 var scoreboard = Crafty.e('2D, DOM, Text');
-scoreboard.attr({y: 0, x: windowSize, w: scoreboardSize, h: windowSize});
+scoreboard.attr({y: 200, x: windowSize, w: scoreboardSize, h: windowSize});
 scoreboard.textFont({size: "4em"});
 scoreboard.updateText = function () {
-    text = "brumball.com <br><br>";
+    text = "";
     for (var team = 0; team < playerNum; team++) {
-        text += colours[team] + ": " + teamScores[team] + "<br>";
+        text += "<span style=\"color:" + colours[team] + "\">&#9679;</span> " + toTitleCase(colours[team]) + ": " + teamScores[team] + "<br>";
     }
     scoreboard.text(text);
 };
@@ -329,6 +334,13 @@ function advanceDemo(){
             demoState++;
     }
 }
+
+function toTitleCase(str) {
+    return str.replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+    });
+}
+
 
 createBall();
 setInterval(createBall, createBallInterval);
