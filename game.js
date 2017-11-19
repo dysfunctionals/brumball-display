@@ -99,8 +99,7 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
     });
 
     paddle.onHit('Ball', function () {
-	    console.log("Hello world" + paddle.id);
-        teamScores[paddle.id] += paddleHitScore;
+        teamScores[this.id] += paddleHitScore;
     });
 }
 
@@ -166,7 +165,6 @@ function createBall() {
 
 function setPaddleSize(size) {
     Crafty('Paddle').each(function () {
-        console.log("SetPaddleSize");
         this.paddleLength = size;
         this.w = size;
     });
@@ -176,7 +174,6 @@ function createPowerup() {
     if (number_live_powerup < maxPowerups) {
         var powerUpId = Crafty.math.randomInt(0, 4);
         //var powerup = Crafty.e('PowerUp, 2D, canvas, Collision, ' + powerupName[powerUpId]);
-        console.log('Create powerup');
         var powerup = Crafty.e('Powerup, 2D, '+powerupName[powerUpId]+', Canvas, Collision, WiredHitBox');
         powerup.attr({
             x: center+(Math.random()-0.5)*300,
@@ -189,7 +186,6 @@ function createPowerup() {
         powerup.debugStroke('Black');
 
         powerup.onHit('Ball', function () {
-            console.log('Powerup Hit by ball');
             number_live_powerup--;
             this.runPowerup();
             this.destroy();
@@ -200,7 +196,6 @@ function createPowerup() {
             // Increase Paddle Size
             case 0:
                 powerup.runPowerup = function () {
-                    console.log("Increase paddle size powerup");
                     setPaddleSize(maxPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
                 };
@@ -209,7 +204,6 @@ function createPowerup() {
             // Decrease Paddle size
             case 1:
                 powerup.runPowerup = function() {
-                    console.log("Decrease paddle size powerup");
                     setPaddleSize(minPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
                 };
@@ -218,7 +212,6 @@ function createPowerup() {
             // PaddleDynamic
             case 2:
                 powerup.runPowerup = function () {
-                    console.log("Paddle Dynamic powerup");
                     setPaddleSize(minPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay / 2, maxPaddleLength);
                     setTimeout(setPaddleSize, powerupDelay, defaultPaddleLength);
@@ -228,7 +221,6 @@ function createPowerup() {
             // massBallz
             case 3:
                 powerup.runPowerup = function() {
-                    console.log("Mass ballz powerup");
                     for (var ball = 0; ball < maxMassBallz; ball++) {
                         maxBalls = maxMassBallz;
                         createBall();
@@ -240,7 +232,6 @@ function createPowerup() {
             // ballSpeed
             case 4:
                 powerup.runPowerup = function () {
-                    console.log("Ball Speed powerup");
                     Crafty('Ball').each(function () {
                         this.dx *= 3;
                         this.dy *= 3;
@@ -268,7 +259,7 @@ function paddleRequest() {
 }
 
 Crafty.bind('KeyDown', function(e) {
-    if (e.key == Crafty.key.ENTER) {
+    if (e.key == Crafty.keys.ENTER) {
         createPowerup();
     }
 });
@@ -277,6 +268,6 @@ createBall();
 setInterval(createBall, createBallInterval);
 
 createPowerup();
-//setInterval(createPowerup, createPowerupInterval);
+setInterval(createPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
