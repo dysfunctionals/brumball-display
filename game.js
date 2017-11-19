@@ -226,10 +226,10 @@ function createPowerup(index) {
                         time += 0.1;
                         if (time > 10) {
                             clearInterval(dynamicMovement);
+                            setPaddleSize(defaultPaddleLength);
                         }
                     }, 50);
 
-                    setPaddleSize(defaultPaddleLength);
                 };
                 break;
 
