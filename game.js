@@ -113,7 +113,6 @@ scoreboard.updateText = function () {
         text += colours[team] + ": " + teamScores[team] + " ";
     }
     scoreboard.text(text);
-	console.log(text);
 };
 setInterval(scoreboard.updateText, 200);
 
@@ -135,8 +134,8 @@ function createBall() {
 
         ball.bind('EnterFrame', function () {
             if (this.dx < minBallSpeed && this.dy < minBallSpeed) {
-                this.dx = (Math.random() - 0.5) * 6;
-                this.dy = (Math.random() - 0.5) * 6;
+                this.dx = (Math.random() - 0.5) * ballAcceleration;
+                this.dy = (Math.random() - 0.5) * ballAcceleration;
             }
             if (this.dx > maxBallSpeed) {
                 this.dx = maxBallSpeed;
@@ -166,9 +165,10 @@ function createBall() {
 }
 
 function setPaddleSize(size) {
-    Crafty('Paddle').each(function (paddle) {
-        paddle.paddleLength = size;
-        paddle.w = size;
+    Crafty('Paddle').each(function () {
+        console.log("SetPaddleSize");
+        this.paddleLength = size;
+        this.w = size;
     });
 }
 
@@ -184,8 +184,6 @@ function createPowerup() {
             w: 100, h: 100
         });
         powerup.collision(new Crafty.polygon(
-            //32, 120, 96, 120, 128, 64, 96, 0, 32, 0, 0, 64
-            //22, 110, 86, 110, 118, 54, 86, -10, 22, -10, -10, 54
             17, 105, 84, 105, 115, 50, 84, -15, 17, -15, -15, 50
         ));
         powerup.debugStroke('Black');
@@ -243,12 +241,15 @@ function createPowerup() {
             case 4:
                 powerup.runPowerup = function () {
                     console.log("Ball Speed powerup");
-                    Crafty('Ball').each(function (ball) {
-                        ball.dx *= 5;
-                        ball.dy *= 5;
+                    Crafty('Ball').each(function () {
+                        this.dx *= 3;
+                        this.dy *= 3;
                     });
                 };
                 break;
+
+            default:
+                console.log('Unknown Powerup id ' + powerUpId);
         }
     }
 }
@@ -266,10 +267,16 @@ function paddleRequest() {
     });
 }
 
+Crafty.bind('KeyDown', function(e) {
+    if (e.key == Crafty.key.ENTER) {
+        createPowerup();
+    }
+});
+
 createBall();
 setInterval(createBall, createBallInterval);
 
 createPowerup();
-setInterval(createPowerup, createPowerupInterval);
+//setInterval(createPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
