@@ -3,7 +3,7 @@ var windowSize = 1000; // Window Size
 var scoreboardHeight = 100;
 var center = windowSize / 2; // Window Center
 var radius = windowSize / 3; // Window Radius
-var url = "http://localhost:8080"; // Url to the server
+var url = "/api"; // Url to the server
 
 // Paddle variables
 var paddleThickness = 10; // Paddle Thickness
