@@ -105,7 +105,7 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
 }
 
 var scoreboard = Crafty.e('2D, DOM, Text');
-scoreboard.attr({x: 0, y: windowSize, w: windowSize, h: scoreboardHeight});
+scoreboard.attr({x: 0, y: windowSize-scoreboardHeight, w: windowSize, h: scoreboardHeight});
 scoreboard.textFont({size: "2em"});
 scoreboard.updateText = function () {
     var text = "Scoreboard ";
