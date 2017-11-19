@@ -1,6 +1,7 @@
 
 // window Variables
 var windowSize = 1000; // Window Size
+var scoreboardHeight = 100;
 var center = windowSize/2; // Window Center
 var radius = windowSize/3; // Window Radius]
 var url = "http://localhost:8080"; // Url to the server
@@ -32,11 +33,15 @@ var maxPowerups = 3;
 var powerupRadius = 40;
 var createPowerupInterval = 3000;
 
+var teamScores = [0, 0, 0, 0, 0, 0];
+var paddleHitScore = 1;
+var wallHitScore = -3;
+
 Crafty.sprite(64, "powerupSprites.png",
     {PaddleLonger:[0,0], PaddleShorter:[0,1], PaddleDynamic:[0,2], massBallz:[0,3], ballSpeed:[0,4], ballCurve:[0,5]});
 var powerupName = ["PaddleLonger", "PaddleShorter", "PaddleDynamic", "massBallz", "ballSpeed", "ballCurve"];
 
-Crafty.init(windowSize, windowSize); // Init the window
+Crafty.init(windowSize, windowSize + scoreboardHeight); // Init the window
 Crafty.background('white'); // Sets the window background
 
 var outerRadius = radius + 10;
@@ -44,12 +49,16 @@ var outerLength = outerRadius * 2 * Math.tan(angleRad/2);
 for(var outerPos = 0; outerPos < playerNum; outerPos++){
 	var wall = Crafty.e("Wall, 2D, DOM, Color, Collision");
 	wall.attr({
+        id: outerPos,
 		x: center + (outerLength * Math.sin(outerPos * angleRad - (angleRad/2))),
 		y: center + (outerLength * Math.cos(outerPos * angleRad - (angleRad/2))),
 		w: outerLength + 4,
 		h: 5,
 		rotation: -outerPos * angleDeg
 	});
+	wall.onHit('Ball', function() {
+	    teamScores[this.id] += wallHitScore;
+    });
 	wall.color("black");
 }
 
@@ -69,20 +78,34 @@ for (var paddlePos = 0; paddlePos < playerNum; paddlePos++) {
         position: 0,
         movement: 0.2 // Clockwise 1 Anticlock -1 No thing 0
     });
+
     paddle.calcPos = function() {
         this.attr({
             x: this.originalX + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.cos(this.rotation * 2*Math.PI/360)),
             y: this.originalY + ((topRadius/2 - paddleLength/2) * (this.position + 1) * Math.sin(this.rotation * 2*Math.PI/360))
         });
     };
-    paddle.calcPos();
-    paddle.bind('EnterFrame', function () {
-	this.position += this.movement * 0.05;
-	if(this.position > 1) this.position = 1;
-	if(this.position < -1) this.position = -1;
+
+    paddle.bind('EnterFrame', function() {
+        this.position += this.movement * 0.05;
+        if (this.position > 1) this.position = 1;
+        if (this.position < -1) this.position = -1;
         this.calcPos();
     });
+
+    paddle.onHit('Ball', function() {
+        teamScores[this.id] += paddleHitScore;
+    });
 }
+
+var scoreboard = Crafty.e('2D, DOM, Text');
+scoreboard.attr({x:0, y:windowSize, w:windowSize, h:scoreboardHeight});
+scoreboard.updateText = function() {
+    this.text = "Scoreboard ";
+    for (var team = 0; team < playerNum; team++) {
+        this.text += colours[team] + ": " + teamScore[team] + " ";
+    }
+};
 
 function createBall() {
     if (number_live_balls < max_balls) {
@@ -169,7 +192,7 @@ function paddleRequest() {
 createBall();
 setInterval(createBall, createBallInterval);
 
-createPowerup();
-setInterval(createPowerup, createPowerupInterval);
+//createPowerup();
+//setInterval(createPowerup, createPowerupInterval);
 
 setInterval(paddleRequest, 100);
